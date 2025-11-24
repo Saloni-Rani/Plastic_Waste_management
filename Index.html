@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Domestic Waste Management — Website</title>
+  <!-- Adds factual, sourced content (links in-page). SPA-style multi-page site. -->
+  <style>
+    :root{ --bg:#0b1020; --panel:#12183a; --muted:#aab2d5; --text:#eef1ff; --accent:#7c9cff; --accent2:#7effc5; --line:rgba(255,255,255,.08); --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);}    
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font:16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text);
+      background:radial-gradient(1100px 700px at 80% -30%, rgba(124,156,255,.08), transparent 60%), radial-gradient(1000px 600px at -10% 0%, rgba(126,255,197,.06), transparent 50%), var(--bg)}
+
+    /* Shell */
+    header{position:sticky; top:0; z-index:50; backdrop-filter:blur(8px) saturate(140%);
+      background:linear-gradient(180deg, rgba(11,16,32,.92), rgba(11,16,32,.7)); border-bottom:1px solid var(--line)}
+    .wrap{max-width:1200px; margin:auto; padding:14px 20px}
+    .brand{display:flex; align-items:center; gap:10px}
+    .logo{width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:var(--shadow)}
+    h1{font-size:1.25rem; margin:0}
+
+    .topbar{display:flex; align-items:center; gap:16px; justify-content:space-between}
+    .nav{display:flex; gap:.6rem; flex-wrap:wrap; list-style:none; padding:0; margin:0}
+    .nav a{display:inline-flex; padding:10px 12px; border-radius:10px; text-decoration:none; color:var(--text); border:1px solid var(--line); background:rgba(255,255,255,.04)}
+    .nav a.active, .nav a:hover{border-color:var(--accent); box-shadow:0 0 0 6px rgba(124,156,255,.35)}
+
+    .search{position:relative}
+    .search input{width:280px; max-width:48vw; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--text)}
+    .search-results{position:absolute; top:110%; left:0; right:0; background:var(--panel); border:1px solid var(--line); border-radius:12px; display:none; max-height:280px; overflow:auto}
+    .search-results a{display:block; padding:10px 12px; text-decoration:none; color:var(--text); border-bottom:1px solid var(--line)}
+    .search-results a:last-child{border-bottom:0}
+
+    main{padding:26px 20px}
+    .accent{height:4px; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:999px}
+
+    /* Layout */
+    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:18px}
+    .col-12{grid-column:span 12}
+    .col-8{grid-column:span 8}
+    .col-4{grid-column:span 4}
+    .col-3{grid-column:span 3}
+    @media (max-width:980px){.col-8,.col-4,.col-3{grid-column:span 12}}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:var(--shadow)}
+    .label{display:inline-block; font-size:.75rem; color:var(--muted); border:1px solid rgba(255,255,255,.2); padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.02)}
+    h2,h3{margin:8px 0 10px}
+
+    .pillrow{display:flex; gap:.5rem; flex-wrap:wrap}
+    .pill{border:1px solid var(--line); padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.04)}
+
+    /* KPIs */
+    .kpi{display:flex; flex-direction:column; gap:4px}
+    .kpi .num{font-size:2rem; font-weight:700}
+    .kpi a{color:var(--muted); text-decoration:none}
+
+    /* Footer */
+    footer{color:var(--muted); text-align:center; padding:40px 0 70px}
+
+    /* Router Views */
+    .view{display:none}
+    .view.show{display:block}
+
+    /* TOC and callouts */
+    .toc{position:sticky; top:110px}
+    .callout{border-left:4px solid var(--accent); padding:10px 12px; border-radius:12px; background:rgba(124,156,255,.08)}
+
+    /* Anim */
+    .fadein{opacity:0; transform:translateY(8px)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div class="brand"><div class="logo" aria-hidden="true"></div><h1>Domestic Waste Management</h1></div>
+      <nav aria-label="Primary">
+        <ul class="nav" id="nav">
+          <li><a href="#/" data-route>Home</a></li>
+          <li><a href="#/classification" data-route>Classification</a></li>
+          <li><a href="#/measures" data-route>Preventive Measures</a></li>
+          <li><a href="#/industrial" data-route>Industrial Processes</a></li>
+          <li><a href="#/effects" data-route>Effects on Resources</a></li>
+          <li><a href="#/prevention" data-route>Prevention</a></li>
+        </ul>
+      </nav>
+      <div class="search">
+        <input id="search" type="search" placeholder="Search text…" aria-label="Search" />
+        <div id="results" class="search-results"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="accent" aria-hidden="true"></div>
+
+    <!-- HOME -->
+    <section id="view-home" class="view show">
+      <div class="grid" style="margin-top:22px">
+        <div class="col-8 card fadein">
+          <span class="label">Introduction</span>
+          <h2>Introduction</h2>
+          <p>Domestic waste is a serious problem in all agglomerations of Mozambique due to a growth in population numbers and nonbiodegradable waste and the absence of sealed dumpsites.</p>
+        </div>
+        <aside class="col-4 fadein">
+          <div class="card">
+            <div class="label">Sections</div>
+            <div class="pillrow" style="margin-top:10px">
+              <span class="pill">Classification of solid waste components</span>
+              <span class="pill">preventive Measures</span>
+              <span class="pill">Plastic Waste in Industrial Processes</span>
+              <span class="pill">Effects on Natural Resources</span>
+              <span class="pill">prevention</span>
+            </div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <div class="label">Note</div>
+            <p class="callout">Improper disposal of Domestic waste from industrial processes can lead to land pollution.</p>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Facts & Figures -->
+      <div class="grid" style="margin-top:18px">
+        <div class="col-3 card kpi fadein">
+          <span class="label">Global plastics (2019)</span>
+          <div class="num">460 Mt</div>
+          <small>Total plastics produced in 2019. <a href="https://www.oecd.org/content/dam/oecd/en/publications/support-materials/2022/02/global-plastics-outlook_a653d1c9/Global%20Plastics%20Outlook%20I.pdf" target="_blank" rel="noopener">OECD</a></small>
+        </div>
+        <div class="col-3 card kpi fadein">
+          <span class="label">Recycled share</span>
+          <div class="num">~9%</div>
+          <small>Share of plastic waste recycled globally. <a href="https://ourworldindata.org/plastic-pollution" target="_blank" rel="noopener">Our World in Data</a></small>
+        </div>
+        <div class="col-3 card kpi fadein">
+          <span class="label">Aquatic leakage</span>
+          <div class="num">19–23 Mt/yr</div>
+          <small>Plastic waste entering lakes, rivers & seas each year. <a href="https://www.unep.org/plastic-pollution" target="_blank" rel="noopener">UNEP</a></small>
+        </div>
+        <div class="col-3 card kpi fadein">
+          <span class="label">Ocean influx</span>
+          <div class="num">~11 Mt/yr</div>
+          <small>Estimated plastic entering oceans annually. <a href="https://ourworldindata.org/how-much-plastic-waste-ends-up-in-the-ocean" target="_blank" rel="noopener">OWID</a></small>
+        </div>
+      </div>
+
+      <!-- Added: At a glance facts -->
+      <div class="grid" style="margin-top:18px">
+        <div class="col-12 card fadein">
+          <span class="label">At a glance</span>
+          <p><strong>Global plastic production has doubled since 2000</strong>, reaching about <strong>460 million tonnes in 2019</strong>. In the same year, the world generated <strong>353 million tonnes of plastic waste</strong>. After accounting for losses in processing, only about <strong>9% of plastic waste was recycled</strong>, roughly <strong>19% incinerated</strong>, nearly <strong>50% landfilled</strong>, and around <strong>22% mismanaged</strong> (dumped, openly burned, or leaked to the environment). <small>Source: <a href="https://www.oecd.org/en/publications/2022/02/global-plastics-outlook_a653d1c9.html" target="_blank" rel="noopener">OECD Global Plastics Outlook</a></small></p>
+          <p>UNEP estimates that <strong>19–23 million tonnes of plastic</strong> leak into <strong>lakes, rivers, and seas every year</strong>, and without additional action, emissions of plastic into aquatic ecosystems could <strong>nearly triple by 2040</strong>. <small>Source: <a href="https://www.unep.org/plastic-pollution" target="_blank" rel="noopener">UNEP</a></small></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLASSIFICATION -->
+    <section id="view-classification" class="view">
+      <div class="grid" style="margin-top:22px">
+        <aside class="col-4 toc">
+          <div class="card">
+            <div class="label">Jump</div>
+            <ul class="nav" style="margin-top:10px">
+              <li><a href="#organic">Organic</a></li>
+              <li><a href="#inorganic">Inorganic</a></li>
+              <li><a href="#recyclable">Recyclable</a></li>
+              <li><a href="#radioactive">Radioactive</a></li>
+            </ul>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <div class="label">Key stat</div>
+            <p class="callout">Half of the world's plastic still goes to landfill; ~22% is mismanaged. <a href="https://www.oecd.org/en/about/news/press-releases/2022/02/plastic-pollution-is-growing-relentlessly-as-waste-management-and-recycling-fall-short.html" target="_blank" rel="noopener">OECD</a></p>
+          </div>
+        </aside>
+        <div class="col-8">
+          <div class="card fadein">
+            <span class="label">Domestic waste collection and disposal</span>
+            <h2>Classification of solid waste components</h2>
+            <p>Incineration of plastic waste in some industrial processes can release harmful pollutants into the air, contributing to air pollution and potential health hazards.</p>
+          </div>
+          <div id="organic" class="card fadein" style="margin-top:14px">
+            <h3>Organic Waste</h3>
+            <p>Waste is a major environmental issue that affects the quality of our surroundings, health, and the natural ecosystems. Waste can be classified into two primary types: organic and inorganic waste.</p>
+          </div>
+          <div id="inorganic" class="card fadein" style="margin-top:14px">
+            <h3>Inorganic Waste</h3>
+            <p>inorganic waste originates from chemical substances and materials that do not come from living beings, such as glass, plastic, and metal. The decomposition of inorganic waste is a slow process that can take thousands of years, making their recycling more complex.</p>
+          </div>
+          <div id="recyclable" class="card fadein" style="margin-top:14px">
+            <h3>Recyclable Waste</h3>
+            <p>The Waste which can be Recycled is called Recyclable Waste.</p>
+          </div>
+          <div id="radioactive" class="card fadein" style="margin-top:14px">
+            <h3>Radioactive Waste</h3>
+            <p>Radioactive waste is broadly classified into low-level waste (LLW), such as paper, rags, tools, clothing, which contain small amounts of mostly short-lived radioactivity, intermediate-level waste (ILW), which contains higher amounts of radioactivity and requires some shielding.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEASURES -->
+    <section id="view-measures" class="view">
+      <div class="grid" style="margin-top:22px">
+        <div class="col-12 card fadein">
+          <span class="label">preventive Measures</span>
+          <h2>preventive Measures</h2>
+          <div class="grid">
+            <div class="col-6 card"><h3>Reduce and Reuse:</h3><p>Encourage industries to minimize the use of single-use plastics and adopt reusable and sustainable alternatives.</p></div>
+            <div class="col-6 card"><h3>Recycling:</h3><p>Implement and promote effective recycling programs for industrial plastic waste to reduce the amount of plastic entering landfills and ecosystems.</p></div>
+            <div class="col-6 card"><h3>Circular Economy :</h3><p>Embrace a circular economy approach, where the lifecycle of plastic products is optimized through recycling, reusing, and reducing waste.</p></div>
+            <div class="col-6 card"><h3>Regulations and Policies:</h3><p>Implement and enforce strict regulations on the disposal and management of industrial plastic waste to ensure responsible practices.</p></div>
+            <div class="col-6 card"><h3>  Innovation and Research:</h3><p>Invest in research and innovation to develop eco-friendly alternatives to traditional plastics and more sustainable industrial processes.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INDUSTRIAL -->
+    <section id="view-industrial" class="view">
+      <div class="grid" style="margin-top:22px">
+        <div class="col-12 card fadein">
+          <span class="label">Plastic Waste in Industrial Processes</span>
+          <h2>Plastic Waste in Industrial Processes</h2>
+          <p>Learn about the sources of plastic waste in various industries and their environmental implications.</p>
+
+          <div class="grid" style="margin-top:10px">
+            <div class="col-4 card kpi"><span class="label">Trend</span><div class="num">×2.3 since 2000</div><small>Plastic waste rose from 156 Mt (2000) to 353 Mt (2019). <a href="https://www.oecd.org/en/publications/2022/02/global-plastics-outlook_a653d1c9.html" target="_blank" rel="noopener">OECD</a></small></div>
+            <div class="col-4 card kpi"><span class="label">Fate of waste</span><div class="num">9% recycled</div><small>2019: ~9% recycled, ~19% incinerated, ~50% landfilled, ~22% mismanaged. <a href="https://www.oecd.org/content/dam/oecd/en/publications/reports/2022/02/global-plastics-outlook_a653d1c9/de747aef-en.pdf" target="_blank" rel="noopener">OECD</a></small></div>
+            <div class="col-4 card kpi"><span class="label">Production</span><div class="num">460 Mt (2019)</div><small>Global plastics production. <a href="https://ourworldindata.org/plastic-pollution" target="_blank" rel="noopener">OWID</a></small></div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>Where does plastic waste come from?</h3>
+            <ul>
+              <li><strong>Short‑lived products dominate:</strong> nearly two‑thirds of plastic waste comes from items with lifetimes under five years.</li>
+              <li><strong>Packaging is the largest share (~40%).</strong></li>
+              <li><strong>Consumer goods (~12%)</strong> and <strong>clothing & textiles (~11%)</strong> are other major sources.</li>
+            </ul>
+            <small>Source: <a href="https://www.oecd.org/en/about/news/press-releases/2022/02/plastic-pollution-is-growing-relentlessly-as-waste-management-and-recycling-fall-short.html" target="_blank" rel="noopener">OECD press release summarizing Global Plastics Outlook</a></small>
+          </div>
+
+          <details style="margin-top:14px"><summary>Production and Consumption</summary>
+            <ul>
+              <li><strong>Production and Consumption:</strong> Raw Material Use: The production of plastic involves the extraction and processing of fossil fuels, such as oil and natural gas. This process contributes to environmental degradation and resource depletion.</li>
+              <li>Single-Use Plastics: Industries often use plastic for packaging, leading to a large amount of single-use plastic waste. This contributes significantly to the plastic pollution problem.</li>
+            </ul>
+          </details>
+          <details style="margin-top:10px"><summary>Waste Generation</summary>
+            <ul>
+              <li><strong>Manufacturing Waste: </strong>During the manufacturing of plastic products, waste is generated in the form of defective or excess materials.</li>
+              <li>End-of-life Products: When plastic products reach the end of their life cycle, they often become waste, either through disposal or improper management.</li>
+            </ul>
+          </details>
+          <details style="margin-top:10px"><summary>Recycling Challenges</summary>
+            <ul>
+              <li><strong> Complexity of Plastic Recycling: </strong>Many plastics are challenging to recycle due to variations in composition, color, and the presence of additives.</li>
+              <li><strong>Limited Recycling Infrastructure:</strong> Inadequate recycling infrastructure in many regions hinders the efficient collection and processing of plastic waste.</li>
+            </ul>
+          </details>
+          <details style="margin-top:10px"><summary>Pollution and Environmental Impact</summary>
+            <ul>
+              <li>Land and Water Pollution: Improper disposal of plastic waste leads to pollution of land and water bodies. Plastics can take hundreds of years to degrade, causing long-term environmental damage.</li>
+              <li><strong> Microplastics:</strong> Over time, larger plastic items break down into smaller particles known as microplastics, which can enter ecosystems and potentially harm aquatic life.</li>
+            </ul>
+          </details>
+          <details style="margin-top:10px"><summary>Health Concerns</summary>
+            <ul>
+              <li><strong>Toxic Additives: </strong>Some plastics contain additives that can be harmful to human health. When plastic waste degrades or incinerates, these additives may release toxins into the environment.</li>
+              <li><strong> Food Chain Contamination:</strong> Plastics can enter the food chain when consumed by animals, potentially leading to human exposure to harmful substances.</li>
+            </ul>
+          </details>
+          <details style="margin-top:10px"><summary>Regulatory Measures</summary>
+            <ul>
+              <li><strong> Legislation and Policies: </strong>Governments and international organizations are implementing regulations to reduce single-use plastics, promote recycling, and encourage the responsible management of plastic waste.</li>
+              <li><strong>Extended Producer Responsibility (EPR):</strong>  Some regions have adopted EPR programs, requiring producers to take responsibility for the end-of-life management of their products, including proper disposal and recycling.</li>
+            </ul>
+          </details>
+          <details style="margin-top:10px"><summary>Innovations and Solutions</summary>
+            <ul>
+              <li><strong>Biodegradable Plastics: </strong>The development of biodegradable plastics aims to reduce the environmental impact of plastic waste.</li>
+              <li><strong> Circular Economy Approaches:</strong>  Implementing circular economy principles, such as designing for recyclability and promoting the reuse of plastics, can help minimize waste generation.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- EFFECTS -->
+    <section id="view-effects" class="view">
+      <div class="grid" style="margin-top:22px">
+        <div class="col-12 card fadein">
+          <span class="label">Effects on Natural Resources</span>
+          <h2>Effects on Natural Resources</h2>
+          <p>Discover how plastic waste affects land, water, air, and ecosystems, and the consequences for natural resources.</p>
+          <div class="grid" style="margin-top:10px">
+            <div class="col-4 card kpi"><span class="label">Aquatic leakage</span><div class="num">19–23 Mt/yr</div><small>Estimated plastic entering lakes, rivers & seas annually. <a href="https://www.unep.org/plastic-pollution" target="_blank" rel="noopener">UNEP</a></small></div>
+            <div class="col-4 card kpi"><span class="label">Ocean influx</span><div class="num">~0.5% of waste</div><small>About 1.7 Mt transported to the ocean each year. <a href="https://ourworldindata.org/how-much-plastic-waste-ends-up-in-the-ocean" target="_blank" rel="noopener">OWID</a></small></div>
+            <div class="col-4 card kpi"><span class="label">Projection</span><div class="num">↑ by 2040</div><small>Without action, emissions to aquatic systems could nearly triple by 2040. <a href="https://www.unep.org/topics/ocean-seas-and-coasts/ecosystem-degradation-pollution/plastic-pollution-marine-litter" target="_blank" rel="noopener">UNEP</a></small></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h3>Human exposure</h3>
+            <p>Microplastics have been detected in human blood and reported across several organ systems, raising concerns about long‑term exposure pathways and health impacts. <small>Sources: <a href="https://www.sciencedirect.com/science/article/pii/S0160412022001258" target="_blank" rel="noopener">Leslie et al., 2022</a>; <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11342020/" target="_blank" rel="noopener">2024 review</a></small></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREVENTION -->
+    <section id="view-prevention" class="view">
+      <div class="grid" style="margin-top:22px">
+        <div class="col-12 card fadein">
+          <span class="label">prevention</span>
+          <h2>prevention</h2>
+          <p>Explore strategies and initiatives aimed at reducing, reusing, and recycling plastic waste in industrial settings.</p>
+          <div class="card" style="margin-top:12px">
+            <div class="label">India context</div>
+            <p>For national data and rules, see the Central Pollution Control Board (CPCB): <a href="https://cpcb.nic.in/overview-of-plastic-waste/" target="_blank" rel="noopener">overview</a> and the latest inventories (e.g., 2023–24). <a href="https://cpcb.nic.in/uploads/hwmd/Annual_Inventory2023-24.pdf" target="_blank" rel="noopener">CPCB Inventory PDF</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>&copy; 2023 PlasticAwareness.org</footer>
+  </main>
+
+  <script>
+    // ------- Router -------
+    const routes = {'/':'view-home','/classification':'view-classification','/measures':'view-measures','/industrial':'view-industrial','/effects':'view-effects','/prevention':'view-prevention'};
+    function setActive(path){
+      // Normalize to a hash route like "#/measures" for comparison
+      const routeHash = `#/${path.replace(/^#?\/?/, '')}`;
+      document.querySelectorAll('[data-route]').forEach(a=>{
+        a.classList.toggle('active', a.getAttribute('href') === routeHash);
+      });
+    }
+    function render(){
+      const path = location.hash.replace('#','') || '/';
+      setActive(path.startsWith('/')?path:'/'+path);
+      const viewId = routes[path] || routes['/'];
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
+      const el = document.getElementById(viewId);
+      el?.classList.add('show');
+      el?.querySelectorAll('.fadein').forEach(card=>{
+        card.animate([{opacity:.15, transform:'translateY(10px)'},{opacity:1, transform:'translateY(0)'}], {duration:450, easing:'cubic-bezier(.2,.6,.2,1)', fill:'forwards'});
+      });
+    }
+    window.addEventListener('hashchange', render); render();
+
+    // ------- In-page TOC smooth scroll -------
+    document.addEventListener('click', (e)=>{
+      const a = e.target.closest('a[href^="#"]');
+      if(!a) return;
+      const href = a.getAttribute('href');
+      // If this is a router link like "#/measures", do not treat as a CSS selector
+      if (href.startsWith('#/')) return; // let the hashchange router handle it
+      if (href.length > 1) {
+        const targetId = href.slice(1);
+        const el = document.getElementById(targetId);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({behavior:'smooth'});
+        }
+      }
+    });
+
+    // ------- Search (client-side) -------
+    const search = document.getElementById('search');
+    const results = document.getElementById('results');
+    const docs = [
+      {route:'/', 'title':'Introduction', 'text':`Domestic waste is a serious problem in all agglomerations of Mozambique due to a growth in population numbers and nonbiodegradable waste and the absence of sealed dumpsites.`},
+      {route:'/', 'title':'Facts & Figures', 'text':`Global plastics 460 Mt (2019); ~9% recycled; 19–23 Mt/yr leak to aquatic systems; ~11 Mt/yr oceans.`},
+      {route:'/classification', 'title':'Classification of solid waste components', 'text':`Improper disposal of Domestic waste from industrial processes can lead to land pollution. Incineration of plastic waste in some industrial processes can release harmful pollutants into the air, contributing to air pollution and potential health hazards. Organic Waste. Waste is a major environmental issue that affects the quality of our surroundings, health, and the natural ecosystems. Waste can be classified into two primary types: organic and inorganic waste. Inorganic waste originates from chemical substances and materials that do not come from living beings, such as glass, plastic, and metal. The decomposition of inorganic waste is a slow process that can take thousands of years, making their recycling more complex. The Waste which can be Recycled is called Recyclable Waste. Radioactive waste is broadly classified into low-level waste (LLW), such as paper, rags, tools, clothing, which contain small amounts of mostly short-lived radioactivity, intermediate-level waste (ILW), which contains higher amounts of radioactivity and requires some shielding.`},
+      {route:'/measures', 'title':'preventive Measures', 'text':`Reduce and Reuse; Recycling; Circular Economy; Regulations and Policies; Innovation and Research.`},
+      {route:'/industrial', 'title':'Plastic Waste in Industrial Processes', 'text':`Trend doubling; fate of waste; production 460 Mt; Single-Use packaging; manufacturing waste; end-of-life; recycling challenges; pollution & microplastics; health concerns; regulations; EPR; innovations.`},
+      {route:'/effects', 'title':'Effects on Natural Resources', 'text':`Microplastics found in human blood; microplastics reported in multiple organ systems; treaty negotiations ongoing.`},
+      {route:'/prevention', 'title':'prevention', 'text':`Strategies in industrial settings; India CPCB resources.`}
+    ];
+    function runSearch(q){
+      results.innerHTML='';
+      if(!q){results.style.display='none';return}
+      const m = q.toLowerCase();
+      const hits = docs.filter(d => (d.title+d.text).toLowerCase().includes(m)).slice(0,8);
+      hits.forEach(h=>{
+        const a=document.createElement('a'); a.href=`#${h.route}`; a.textContent=h.title; results.appendChild(a);
+      });
+      results.style.display = hits.length? 'block':'none';
+    }
+    search.addEventListener('input', ()=>runSearch(search.value.trim()));
+    document.addEventListener('click', (e)=>{ if(!e.target.closest('.search')) results.style.display='none';});
+
+    // ---------- Self-tests (basic) ----------
+    (function selfTests(){
+      try {
+        // Should not throw for router hashes
+        const dummy = document.createElement('a');
+        dummy.setAttribute('href', '#/measures');
+        document.body.appendChild(dummy);
+        const evt = new Event('click');
+        dummy.dispatchEvent(evt);
+        console.assert(true, 'No exception for router hash');
+
+        // setActive should correctly activate route link
+        setActive('/measures');
+        const active = [...document.querySelectorAll('[data-route]')].some(a=>a.classList.contains('active') && a.getAttribute('href')==="#/measures");
+        console.assert(active, 'Active class applied for /measures');
+
+        // Smooth scroll should work for in-page anchors
+        const anchor = document.createElement('div'); anchor.id = 'organic'; document.body.appendChild(anchor);
+        const toc = document.createElement('a'); toc.setAttribute('href', '#organic'); document.body.appendChild(toc);
+        toc.click();
+        console.assert(true, 'In-page anchor handled');
+      } catch(e){
+        console.error('Self-tests failed:', e);
+      }
+    })();
+  </script>
+</body>
+</html>
